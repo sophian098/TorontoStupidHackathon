@@ -1,0 +1,83 @@
+# Cursor Rules for Text Wrecker
+
+project:
+  name: Text Wrecker
+  description: |
+    Single-page app that "wrecks" user text with funny persona-based
+    replacements. Built for hackathon meme-ability.
+
+scope:
+  allowed_write:
+    - .cursorrules
+    - .gitignore
+    - frontend/**
+    - backend/**
+  disallowed_write:
+    - main.py
+    - README.md
+    - server/**
+    - api/**
+
+principles:
+  - Use Vite + React (no SSR) for the frontend.
+  - Prefer clarity and memeable UX over sophistication.
+  - Security: when injecting user text, never use innerHTML; render as plain text.
+  - Accessibility: ensure focusable controls, visible labels, and readable contrast.
+  - Consistency: use the specified IDs and file names exactly in rendered DOM.
+
+non_functional_requirements:
+  - React + Vite build. Run with `npm run dev` or open built `dist/` via a static server.
+  - Keep external dependencies minimal: React, Vite, and Google Fonts are allowed.
+
+ui_spec:
+  files:
+    - frontend/index.html (Vite entry)
+    - frontend/src/index.css
+    - frontend/src/App.jsx
+    - frontend/src/main.jsx
+  ids_and_classes:
+    - h1.flashing-text
+    - #personalitySelect
+    - #userInput
+    - #wreckButton
+    - #output
+    - #copyButton
+    - #memeImage
+    - #errorSound
+  content:
+    - Title: "Text Wrecker"
+    - Header: "💥 Text Wrecker 💥"
+    - Personalities:
+      - Corporate Robot
+      - Passive-Aggressive Nightmare
+      - Shakespearean Drama King
+
+style_spec:
+  - Use Google Font "Comic Neue" site-wide.
+  - Early-2000s "cursed" aesthetic.
+  - Bright, clashing colors; hot pink container; neon accents.
+  - Repeating tiled background image.
+  - Flashing header animation named `flash` on `.flashing-text`.
+  - Center main container on page.
+
+behavior_spec:
+  - On `#wreckButton` click:
+    - Play `#errorSound`.
+    - Confirm dialog: "Are you SURE you want to introduce this level of chaos into your life?".
+    - If confirmed: transform text based on selected personality, show in `#output`,
+      and update `#memeImage` with a random meme URL.
+  - On `#copyButton` click:
+    - Copy `#output` text to clipboard.
+    - Temporarily set button text to "Copied!" for ~2 seconds, then revert.
+
+implementation_notes:
+  - Implement three transformation functions (Corporate, Passive-Aggressive, Shakespearean).
+  - Use robust case-insensitive phrase replacement; avoid breaking punctuation.
+  - Prefer `navigator.clipboard.writeText`, with graceful no-op fallback if unavailable.
+  - Keep images and audio as external URLs.
+  - Keep code readable; avoid minification and one-liners.
+
+formatting:
+  - Preserve existing indentation style and width.
+  - Avoid reformatting unrelated code.
+  - Favor descriptive variable and function names.
