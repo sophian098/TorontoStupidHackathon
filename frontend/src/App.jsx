@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import SocialShare from './SocialShare'
 
 function applyReplacements(inputText, replacements) {
   let result = inputText
@@ -135,6 +136,8 @@ export default function App() {
       </button>
 
       <img id="memeImage" alt="Reaction meme will appear here" src={meme} />
+
+      <SocialShare />
 
       <audio id="errorSound" ref={audioRef} src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto" />
     </div>
