@@ -1,0 +1,130 @@
+/* Text Wrecker: cursed early-2000s vibes */
+
+:root {
+  --hot-pink: #ff38b0;
+  --neon-green: #39ff14;
+  --neon-orange: #ff9f1c;
+  --electric-blue: #00c2ff;
+  --deep-purple: #6a00ff;
+  --shadow: rgba(0, 0, 0, 0.35);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: "Comic Neue", cursive, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background-image: url("https://i.imgur.com/sC5f0S5.png"); /* low-quality tiled gif-ish */
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 16px;
+}
+
+.container {
+  width: min(900px, 95vw);
+  background: var(--hot-pink);
+  border: 6px ridge var(--electric-blue);
+  color: var(--neon-green);
+  padding: 20px;
+  box-shadow: 8px 8px 0 var(--deep-purple), 0 0 16px var(--shadow);
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 8px 0;
+  font-size: 2.4rem;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.flashing-text {
+  animation: flash 0.6s infinite alternate ease-in-out;
+}
+
+@keyframes flash {
+  0% { color: #ff0033; }
+  100% { color: #0033ff; }
+}
+
+.tagline {
+  margin: 0 0 16px 0;
+  color: var(--neon-orange);
+  font-weight: 700;
+}
+
+.label {
+  display: block;
+  margin: 12px 0 6px 0;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+}
+
+select, textarea, button {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+select {
+  padding: 10px;
+  border: 4px groove var(--neon-orange);
+  background: #111;
+  color: var(--neon-green);
+}
+
+textarea {
+  padding: 12px;
+  border: 6px inset var(--deep-purple);
+  background: #050505;
+  color: #fff;
+  resize: vertical;
+}
+
+#wreckButton {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: 6px outset var(--neon-green);
+  background: var(--electric-blue);
+  color: #000;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#wreckButton:hover {
+  filter: hue-rotate(45deg) saturate(1.4);
+}
+
+#output {
+  margin: 16px 0;
+  min-height: 80px;
+  background: #111;
+  color: #fff;
+  padding: 12px;
+  border: 6px groove var(--neon-orange);
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+#copyButton {
+  padding: 10px 16px;
+  border: 6px outset var(--neon-orange);
+  background: #222;
+  color: var(--neon-green);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#copyButton:hover {
+  transform: translateY(-1px);
+}
+
+#memeImage {
+  display: block;
+  margin: 18px auto 0 auto;
+  max-width: 100%;
+  border: 8px ridge #fff;
+  box-shadow: 6px 6px 0 #000;
+}
