@@ -348,7 +348,7 @@ export default function App() {
     <div className="container">
       <div className="title-row">
         <img className="title-icon" src={jerryIcon} alt="Jerry icon" />
-        <h1 className="flashing-text">💥 Text Wrecker 💥</h1>
+        <h1 className="flashing-text">💥 The Summer I turned Petty 💥</h1>
       </div>
       <p className="tagline">Enter your boring text and we'll ruin it (respectfully) based on a chaotic personality.</p>
 

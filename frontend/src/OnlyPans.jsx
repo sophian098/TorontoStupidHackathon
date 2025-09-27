@@ -44,7 +44,7 @@ export default function OnlyPans({ onBack }) {
       <div className="onlypans-content">
         <div className="onlypans-header">
           <button className="back-button" onClick={onBack}>
-            ← Back to Text Wrecker
+            ← Back to The Summer I turned Petty
           </button>
           <h1 className="onlypans-title">OnlyPans 🍳</h1>
           <p className="onlypans-subtitle">Premium cookware content you can't find anywhere else</p>

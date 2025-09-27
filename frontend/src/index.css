@@ -235,6 +235,8 @@ textarea {
   align-items: center;
   padding: 15px 20px;
   border-bottom: 3px solid var(--electric-blue);
+  /* Ensure header stays at the top when parent uses grid */
+  grid-column: 1 / -1;
 }
 
 .modal-header h3 {
@@ -261,6 +263,8 @@ textarea {
 
 .modal-body {
   padding: 20px;
+  /* Keep body stacked under header even when parent switches to 2-column grid */
+  grid-column: 1 / -1;
 }
 
 .photo-container {

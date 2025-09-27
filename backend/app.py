@@ -32,7 +32,7 @@ def create_app() -> Flask:
 
     @app.get("/")
     def index() -> tuple:
-        return jsonify(service="Text Wrecker Backend", status="ok"), 200
+        return jsonify(service="The Summer I turned Petty Backend", status="ok"), 200
 
     def load_persona_prompts() -> t.Dict[str, str]:
         """Load persona prompt text from backend/personas/*.txt files.
@@ -104,7 +104,7 @@ def create_app() -> Flask:
             client = genai.Client(api_key=api_key)
 
             system_instructions = (
-                "You are Text Wrecker. Rewrite the user's text in the requested persona. "
+                "You are 'The Summer I turned Petty'. Rewrite the user's text in the requested persona. "
                 "Keep core meaning but change tone. Preserve punctuation and formatting. "
                 "Do NOT add prefatory text or commentary. Return only the rewritten text."
             )
