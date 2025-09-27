@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import SocialShare from './SocialShare'
+import OnlyPans from './OnlyPans'
 
 function applyReplacements(inputText, replacements) {
   let result = inputText
@@ -127,7 +128,7 @@ export default function App() {
   const [output, setOutput] = useState('')
   const [meme, setMeme] = useState('')
   const [copying, setCopying] = useState(false)
-  const [advice, setAdvice] = useState('')
+  const [showOnlyPans, setShowOnlyPans] = useState(false)
   const audioRef = useRef(null)
 
   const outputText = useMemo(() => output, [output])
@@ -216,6 +217,10 @@ export default function App() {
     } catch {}
   }
 
+  if (showOnlyPans) {
+    return <OnlyPans onBack={() => setShowOnlyPans(false)} />
+  }
+
   return (
     <div className="container">
       <h1 className="flashing-text">💥 Text Wrecker 💥</h1>
@@ -266,6 +271,10 @@ export default function App() {
       />
 
       <SocialShare />
+
+      <button className="onlypans-button" onClick={() => setShowOnlyPans(true)}>
+        🍳 OnlyPans
+      </button>
 
       <audio id="errorSound" ref={audioRef} src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto" />
     </div>
