@@ -41,13 +41,14 @@ export default function OnlyPans({ onBack }) {
 
   return (
     <div className="onlypans-container">
-      <div className="onlypans-header">
-        <button className="back-button" onClick={onBack}>
-          ← Back to Text Wrecker
-        </button>
-        <h1 className="onlypans-title">OnlyPans 🍳</h1>
-        <p className="onlypans-subtitle">Premium cookware content you can't find anywhere else</p>
-      </div>
+      <div className="onlypans-content">
+        <div className="onlypans-header">
+          <button className="back-button" onClick={onBack}>
+            ← Back to Text Wrecker
+          </button>
+          <h1 className="onlypans-title">OnlyPans 🍳</h1>
+          <p className="onlypans-subtitle">Premium cookware content you can't find anywhere else</p>
+        </div>
 
       <div className="pans-grid">
         {pans.map(pan => (
@@ -116,13 +117,14 @@ export default function OnlyPans({ onBack }) {
         </div>
       )}
 
-      <div className="onlypans-footer">
-        <p>© 2024 OnlyPans - Where cookware gets spicy 🌶️</p>
-        <div className="footer-links">
-          <a href="#terms">Terms of Service</a>
-          <a href="#privacy">Privacy Policy</a>
-          <a href="#support">Support</a>
-          <a href="#careers">Careers</a>
+        <div className="onlypans-footer">
+          <p>© 2024 OnlyPans - Where cookware gets spicy 🌶️</p>
+          <div className="footer-links">
+            <a href="#terms">Terms of Service</a>
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#support">Support</a>
+            <a href="#careers">Careers</a>
+          </div>
         </div>
       </div>
     </div>

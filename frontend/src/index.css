@@ -292,20 +292,30 @@ textarea {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 20px;
   font-family: inherit;
+  overflow-x: hidden;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.onlypans-content {
+  width: min(900px, 95vw);
+  padding: 20px;
 }
 
 .onlypans-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   position: relative;
+  padding: 60px 0 10px 0;
 }
 
 .back-button {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
@@ -315,16 +325,19 @@ textarea {
   font-weight: 600;
   transition: all 0.3s ease;
   font-family: inherit;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 .back-button:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  transform: translateX(-50%) translateY(-2px);
 }
 
 .onlypans-title {
-  font-size: 3.5rem;
-  margin: 20px 0 10px 0;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  margin: 10px 0;
   background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
   background-size: 400% 400%;
   -webkit-background-clip: text;
@@ -332,6 +345,7 @@ textarea {
   background-clip: text;
   animation: gradientShift 3s ease infinite;
   font-weight: 800;
+  line-height: 1.1;
 }
 
 @keyframes gradientShift {
@@ -340,18 +354,21 @@ textarea {
 }
 
 .onlypans-subtitle {
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
   opacity: 0.9;
   margin-bottom: 0;
   font-weight: 600;
+  padding: 0 20px;
+  line-height: 1.4;
 }
 
 .pans-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(15px, 4vw, 30px);
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 10px;
 }
 
 .pan-card {
@@ -363,6 +380,7 @@ textarea {
   transition: all 0.3s ease;
   cursor: pointer;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
 }
 
 .pan-card:hover {
@@ -370,9 +388,13 @@ textarea {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
+.pan-card:active {
+  transform: translateY(-5px);
+}
+
 .pan-image-container {
   position: relative;
-  height: 250px;
+  height: clamp(200px, 30vw, 250px);
   overflow: hidden;
 }
 
@@ -389,40 +411,43 @@ textarea {
 
 .pan-overlay {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 10px;
+  right: 10px;
   background: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 8px 15px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 15px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2.5vw, 0.9rem);
 }
 
 .pan-info {
-  padding: 20px;
+  padding: clamp(15px, 4vw, 20px);
 }
 
 .pan-name {
-  font-size: 1.4rem;
-  margin: 0 0 10px 0;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  margin: 0 0 8px 0;
   color: #feca57;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .pan-description {
-  margin: 0 0 15px 0;
+  margin: 0 0 12px 0;
   opacity: 0.9;
   line-height: 1.4;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
 }
 
 .pan-stats {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
+  margin-bottom: 15px;
+  font-size: clamp(0.8rem, 2.2vw, 0.9rem);
   opacity: 0.8;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
 .subscribe-btn {
@@ -430,19 +455,26 @@ textarea {
   background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
   border: none;
   color: white;
-  padding: 12px;
+  padding: clamp(10px, 3vw, 12px);
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   margin: 0 20px 20px 20px;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  touch-action: manipulation;
+  display: block;
+  text-align: center;
 }
 
 .subscribe-btn:hover {
   background: linear-gradient(45deg, #ff5252, #ff7979);
   transform: translateY(-2px);
+}
+
+.subscribe-btn:active {
+  transform: translateY(0);
 }
 
 /* Modal Styles */
@@ -457,45 +489,58 @@ textarea {
   justify-content: center;
   align-items: center;
   z-index: 2000;
-  padding: 20px;
+  padding: clamp(10px, 3vw, 20px);
+  overflow-y: auto;
 }
 
 .pan-modal {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+  border-radius: clamp(15px, 3vw, 20px);
   max-width: 900px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 95vh;
   overflow-y: auto;
   border: 2px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  margin: auto;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px;
+  padding: clamp(15px, 4vw, 25px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  position: sticky;
+  top: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 10;
 }
 
 .modal-header h2 {
   margin: 0;
   color: #feca57;
-  font-size: 2rem;
+  font-size: clamp(1.3rem, 5vw, 2rem);
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .close-modal {
   background: none;
   border: none;
   color: white;
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
   cursor: pointer;
-  padding: 0;
+  padding: 5px;
   width: auto;
   line-height: 1;
   transition: color 0.3s ease;
+  touch-action: manipulation;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-modal:hover {
@@ -503,14 +548,16 @@ textarea {
 }
 
 .modal-content {
-  padding: 25px;
+  padding: clamp(15px, 4vw, 25px);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  grid-template-columns: 1fr;
+  gap: clamp(15px, 4vw, 30px);
 }
 
 .modal-pan-image {
   width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   border-radius: 15px;
   aspect-ratio: 1;
   object-fit: cover;
@@ -520,20 +567,22 @@ textarea {
 .modal-info {
   display: flex;
   flex-direction: column;
+  text-align: center;
 }
 
 .modal-bio {
-  font-size: 1.1rem;
-  margin-bottom: 15px;
+  font-size: clamp(1rem, 3vw, 1.1rem);
+  margin-bottom: 12px;
   opacity: 0.95;
   font-style: italic;
   color: #feca57;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .modal-description {
-  font-size: 1rem;
-  margin-bottom: 25px;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  margin-bottom: 20px;
   opacity: 0.9;
   line-height: 1.5;
 }
@@ -541,68 +590,83 @@ textarea {
 .modal-stats {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   background: rgba(255, 255, 255, 0.1);
-  padding: 20px;
+  padding: clamp(15px, 4vw, 20px);
   border-radius: 15px;
   backdrop-filter: blur(5px);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .stat {
   text-align: center;
+  flex: 1;
+  min-width: 80px;
 }
 
 .stat-number {
   display: block;
-  font-size: 1.8rem;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
   font-weight: 700;
   color: #feca57;
   margin-bottom: 5px;
+  line-height: 1.1;
 }
 
 .stat-label {
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 2vw, 0.9rem);
   opacity: 0.8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 .modal-actions {
   display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: clamp(10px, 3vw, 15px);
+  margin-bottom: 25px;
+  flex-wrap: wrap;
 }
 
 .subscribe-premium {
   flex: 2;
+  min-width: 150px;
   background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
   border: none;
   color: white;
-  padding: 15px 20px;
+  padding: clamp(12px, 3vw, 15px) clamp(15px, 4vw, 20px);
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  touch-action: manipulation;
 }
 
 .tip-button {
   flex: 1;
+  min-width: 100px;
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 15px 20px;
+  padding: clamp(12px, 3vw, 15px) clamp(15px, 4vw, 20px);
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  touch-action: manipulation;
 }
 
 .subscribe-premium:hover, .tip-button:hover {
   transform: translateY(-2px);
+}
+
+.subscribe-premium:active, .tip-button:active {
+  transform: translateY(0);
 }
 
 .subscribe-premium:hover {
@@ -614,26 +678,30 @@ textarea {
 }
 
 .recent-posts h4 {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   color: #feca57;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
   font-weight: 600;
+  text-align: left;
 }
 
 .post-previews {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(8px, 2vw, 12px);
 }
 
 .post-preview {
   background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
+  padding: clamp(12px, 3vw, 15px);
   border-radius: 12px;
   font-style: italic;
   opacity: 0.9;
   border-left: 3px solid #feca57;
   transition: all 0.3s ease;
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+  line-height: 1.4;
+  text-align: left;
 }
 
 .post-preview:hover {
@@ -643,8 +711,8 @@ textarea {
 
 .onlypans-footer {
   text-align: center;
-  margin-top: 60px;
-  padding-top: 30px;
+  margin-top: clamp(40px, 8vw, 60px);
+  padding-top: clamp(20px, 5vw, 30px);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   opacity: 0.7;
 }
@@ -652,7 +720,7 @@ textarea {
 .footer-links {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: clamp(15px, 4vw, 30px);
   margin-top: 15px;
   flex-wrap: wrap;
 }
@@ -661,8 +729,10 @@ textarea {
   color: white;
   text-decoration: none;
   transition: all 0.3s ease;
-  padding: 5px 10px;
+  padding: 8px 12px;
   border-radius: 15px;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  touch-action: manipulation;
 }
 
 .footer-links a:hover {
@@ -674,17 +744,18 @@ textarea {
 /* OnlyPans Button */
 .onlypans-button {
   margin-top: 20px;
-  padding: 15px 25px;
+  padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 25px);
   background: linear-gradient(45deg, #667eea, #764ba2);
   border: none;
   color: white;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
   border-radius: 25px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
   font-family: inherit;
+  touch-action: manipulation;
 }
 
 .onlypans-button:hover {
@@ -693,41 +764,109 @@ textarea {
   background: linear-gradient(45deg, #5a67d8, #6b46c1);
 }
 
-/* Mobile responsive for OnlyPans */
+.onlypans-button:active {
+  transform: translateY(-1px);
+}
+
+/* Enhanced Mobile responsive for OnlyPans */
 @media (max-width: 768px) {
-  .onlypans-title {
-    font-size: 2.5rem;
+  .onlypans-content {
+    padding: 15px;
+  }
+  
+  .onlypans-header {
+    margin-bottom: 25px;
+    padding: 50px 0 10px 0;
+  }
+  
+  .back-button {
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+    padding: 8px 15px;
+    font-size: 0.85rem;
   }
   
   .pans-grid {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
-  
-  .modal-content {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 20px;
+    padding: 0 5px;
   }
   
   .modal-actions {
     flex-direction: column;
+    gap: 12px;
+  }
+  
+  .subscribe-premium, .tip-button {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .onlypans-content {
+    padding: 10px;
+  }
+  
+  .onlypans-header {
+    padding: 45px 0 5px 0;
   }
   
   .back-button {
-    position: static;
-    margin-bottom: 20px;
+    left: 50%;
+    top: 8px;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
   
-  .modal-header {
-    padding: 20px;
+  .pans-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 0;
   }
   
-  .modal-header h2 {
-    font-size: 1.5rem;
+  .pan-card {
+    border-radius: 15px;
+  }
+  
+  .pan-image-container {
+    height: 200px;
+  }
+  
+  .pan-overlay {
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .modal-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .stat {
+    min-width: unset;
   }
   
   .footer-links {
-    gap: 15px;
+    gap: 10px;
+  }
+}
+
+@media (min-width: 769px) {
+  .modal-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  
+  .modal-info {
+    text-align: left;
+  }
+  
+  .modal-pan-image {
+    max-width: none;
   }
 }
