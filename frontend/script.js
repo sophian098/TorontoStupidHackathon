@@ -45,6 +45,54 @@
     return applyReplacements(text, replacements);
   }
 
+  function wreckTeenAngstPoet(text) {
+    const replacements = [
+      [/\blife\b/gi, "existence"],
+      [/\bparents?\b/gi, "oppressors"],
+      [/\bheart\b/gi, "aching heart"],
+      [/\bhappy\b/gi, "fine, I guess"],
+      [/\blove\b/gi, "love (whatever)"],
+      [/\bworld\b/gi, "void"],
+    ];
+    return applyReplacements(text, replacements);
+  }
+
+  function wreckBelly(text) {
+    const replacements = [
+      [/\b(hello|hi)\b/gi, "yo"],
+      [/\bmoney\b/gi, "bag"],
+      [/\bwork\b/gi, "grind"],
+      [/\bparty\b/gi, "link up"],
+      [/\bvery\b/gi, "mad"],
+      [/\bgood\b/gi, "fire"],
+    ];
+    return applyReplacements(text, replacements);
+  }
+
+  function wreckJeremiah(text) {
+    const replacements = [
+      [/\byour\b/gi, "your glorious"],
+      [/\byou\b/gi, "legend"],
+      [/\bgreat\b/gi, "immaculate"],
+      [/\bnice\b/gi, "elite"],
+      [/\bteam\b/gi, "squad"],
+      [/\blet'?s\b/gi, "let's go"],
+    ];
+    return applyReplacements(text, replacements);
+  }
+
+  function wreckConrad(text) {
+    const replacements = [
+      [/\bfriends?\b/gi, "chums"],
+      [/\bidea\b/gi, "notion"],
+      [/\bvery\b/gi, "quite"],
+      [/\bgood\b/gi, "splendid"],
+      [/\bbad\b/gi, "most unfortunate"],
+      [/\bI\b/g, "one"],
+    ];
+    return applyReplacements(text, replacements);
+  }
+
   function getSelectedPersona() {
     const select = document.getElementById("personalitySelect");
     return select ? String(select.value) : "";
@@ -97,6 +145,14 @@
         return wreckPassiveAggressive(text);
       case "Shakespearean Drama King":
         return wreckShakespearean(text);
+      case "Teen Angst Poet":
+        return wreckTeenAngstPoet(text);
+      case "Belly":
+        return wreckBelly(text);
+      case "Jeremiah":
+        return wreckJeremiah(text);
+      case "Conrad":
+        return wreckConrad(text);
       default:
         return text;
     }

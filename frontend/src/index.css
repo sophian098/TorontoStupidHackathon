@@ -129,6 +129,20 @@ textarea {
   box-shadow: 6px 6px 0 #000;
 }
 
+/* Advice banner */
+#adviceBanner {
+  margin: 12px 0 16px 0;
+  padding: 12px 14px;
+  border: 6px double var(--electric-blue);
+  background: #000;
+  color: var(--neon-orange);
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 2px 2px 0 #000;
+  box-shadow: 6px 6px 0 var(--deep-purple);
+  animation: flash 0.9s infinite alternate;
+}
+
 /* Social Share Styles */
 .social-share {
   margin-top: 20px;
