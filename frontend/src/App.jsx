@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import SocialShare from './SocialShare'
 import OnlyPans from './OnlyPans'
+import jerryIcon from './assets/jerry.png'
 
 function applyReplacements(inputText, replacements) {
   let result = inputText
@@ -128,7 +129,9 @@ export default function App() {
   const [output, setOutput] = useState('')
   const [meme, setMeme] = useState('')
   const [copying, setCopying] = useState(false)
+  const [advice, setAdvice] = useState('')
   const [showOnlyPans, setShowOnlyPans] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const audioRef = useRef(null)
 
   const outputText = useMemo(() => output, [output])
@@ -146,45 +149,55 @@ export default function App() {
     )
     if (!confirmed) return
 
-    // Try backend AI first; fall back to local rules if unavailable
+    // Clear previous output and show a generating indicator
+    setAdvice('')
+    setMeme('')
+    setOutput('Generating...')
+    setGenerating(true)
+
     try {
-      const res = await fetch('/api/wreck', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ persona, text: input })
-      })
-      if (res.ok) {
-        const data = await res.json()
-        if (data?.output) {
-          setOutput(String(data.output))
+      // Try backend AI first; fall back to local rules if unavailable
+      try {
+        const res = await fetch('/api/wreck', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ persona, text: input })
+        })
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.output) {
+            setOutput(String(data.output))
+          } else {
+            setOutput(wreckText(persona, input))
+          }
         } else {
           setOutput(wreckText(persona, input))
         }
-      } else {
+      } catch {
         setOutput(wreckText(persona, input))
       }
-    } catch {
-      setOutput(wreckText(persona, input))
-    }
 
-    try {
-      const res = await fetch('/api/meme', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: input })
-      })
-      if (res.ok) {
-        const data = await res.json()
-        if (data?.url) {
-          setMeme(String(data.url))
-          return
+      // Attempt meme API, fallback to local list
+      let memeUrl = ''
+      try {
+        const res = await fetch('/api/meme', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: input })
+        })
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.url) memeUrl = String(data.url)
         }
-      }
-    } catch {}
+      } catch {}
 
-    // Fallback to local list if API fails
-    const next = MEMES[Math.floor(Math.random() * MEMES.length)] || FALLBACK_MEME
-    setMeme(next)
+      if (!memeUrl) {
+        memeUrl = MEMES[Math.floor(Math.random() * MEMES.length)] || FALLBACK_MEME
+      }
+      setMeme(memeUrl)
+    } finally {
+      setGenerating(false)
+    }
   }
 
   function handleMemeError() {
@@ -194,14 +207,124 @@ export default function App() {
     if (next !== meme) setMeme(next)
   }
 
+  async function generateWreckagePngBlob(imageUrl, textContent) {
+    const textString = String(textContent || '')
+    const targetWidth = 1024
+    const margin = 32
+    const spacing = 24
+    const fontSize = 36
+    const lineHeight = Math.round(fontSize * 1.35)
+    const fontSpec = `${fontSize}px "Comic Neue", "Comic Sans MS", cursive, sans-serif`
+
+    async function loadBitmap(url) {
+      if (!url) return null
+      try {
+        const res = await fetch(url, { mode: 'cors', cache: 'no-store' })
+        const blob = await res.blob()
+        if ('createImageBitmap' in window) {
+          return await createImageBitmap(blob)
+        }
+        return await new Promise((resolve, reject) => {
+          const img = new Image()
+          img.onload = () => resolve(img)
+          img.onerror = reject
+          img.src = URL.createObjectURL(blob)
+        })
+      } catch {
+        return null
+      }
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      const words = text.split(/\s+/)
+      const lines = []
+      let current = ''
+      for (const word of words) {
+        const tentative = current ? current + ' ' + word : word
+        const width = ctx.measureText(tentative).width
+        if (width > maxWidth && current) {
+          lines.push(current)
+          current = word
+        } else {
+          current = tentative
+        }
+      }
+      if (current) lines.push(current)
+      return lines
+    }
+
+    const img = await loadBitmap(imageUrl)
+    const scale = img ? (targetWidth - margin * 2) / img.width : 1
+    const imageDrawWidth = img ? Math.round(img.width * scale) : 0
+    const imageDrawHeight = img ? Math.round(img.height * scale) : 0
+
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) throw new Error('Canvas 2D not supported')
+    ctx.font = fontSpec
+    const textMaxWidth = targetWidth - margin * 2
+    const lines = textString ? wrapText(ctx, textString, textMaxWidth) : []
+    const textBlockHeight = lines.length * lineHeight
+
+    const totalHeight = margin + imageDrawHeight + (img ? spacing : 0) + textBlockHeight + margin
+    canvas.width = targetWidth
+    canvas.height = Math.max(totalHeight, Math.round(targetWidth * 0.6))
+
+    // Background
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Draw image centered
+    if (img) {
+      const x = Math.round((canvas.width - imageDrawWidth) / 2)
+      const y = margin
+      ctx.drawImage(img, x, y, imageDrawWidth, imageDrawHeight)
+    }
+
+    // Draw text
+    ctx.fillStyle = '#000000'
+    ctx.font = fontSpec
+    ctx.textBaseline = 'top'
+    let textY = margin + (img ? imageDrawHeight + spacing : 0)
+    for (const line of lines) {
+      ctx.fillText(line, margin, textY, textMaxWidth)
+      textY += lineHeight
+    }
+
+    return await new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob)
+        else reject(new Error('Failed to export PNG'))
+      }, 'image/png')
+    })
+  }
+
   async function handleCopy() {
     try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(outputText)
+      const pngBlob = await generateWreckagePngBlob(meme, outputText)
+      if (navigator?.clipboard?.write && typeof window.ClipboardItem !== 'undefined') {
+        const item = new ClipboardItem({ 'image/png': pngBlob })
+        await navigator.clipboard.write([item])
+        setCopying(true)
+        setTimeout(() => setCopying(false), 2000)
+      } else {
+        // Fallback: download the PNG if clipboard image write unsupported
+        const url = URL.createObjectURL(pngBlob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'text-wrecker.png'
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        URL.revokeObjectURL(url)
+        setCopying(true)
+        setTimeout(() => setCopying(false), 2000)
       }
-    } catch {}
-    setCopying(true)
-    setTimeout(() => setCopying(false), 2000)
+    } catch {
+      // If generation/copy fails, do nothing visible beyond the button feedback
+      setCopying(true)
+      setTimeout(() => setCopying(false), 2000)
+    }
 
     // Fetch chaotic advice to display after copy
     try {
@@ -223,7 +346,10 @@ export default function App() {
 
   return (
     <div className="container">
-      <h1 className="flashing-text">💥 Text Wrecker 💥</h1>
+      <div className="title-row">
+        <img className="title-icon" src={jerryIcon} alt="Jerry icon" />
+        <h1 className="flashing-text">💥 Text Wrecker 💥</h1>
+      </div>
       <p className="tagline">Enter your boring text and we'll ruin it (respectfully) based on a chaotic personality.</p>
 
       <label htmlFor="personalitySelect" className="label">Choose a personality:</label>
@@ -250,9 +376,9 @@ export default function App() {
         placeholder="Type something worth wrecking..."
       />
 
-      <button id="wreckButton" onClick={handleWreck}>Wreck It!</button>
+      <button id="wreckButton" onClick={handleWreck} disabled={generating}>{generating ? 'Generating...' : 'Wreck It!'}</button>
 
-      <div id="output" aria-live="polite">{outputText}</div>
+      <div id="output" aria-live="polite" aria-busy={generating}>{outputText}</div>
 
       {advice ? (
         <div id="adviceBanner" role="status" aria-live="polite">{advice}</div>

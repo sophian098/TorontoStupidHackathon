@@ -10,14 +10,25 @@
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
   font-family: "Comic Neue", cursive, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background-image: url("https://i.imgur.com/sC5f0S5.png");
-  background-repeat: repeat;
-  background-size: 128px 128px;
+  /* Glitchy neon background */
+  background:
+    /* scanlines */
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 2px, transparent 2px 4px),
+    /* diagonal neon stripes */
+    repeating-linear-gradient(135deg, rgba(255, 56, 176, 0.12) 0 12px, rgba(0, 194, 255, 0.12) 12px 24px),
+    /* radial glows */
+    radial-gradient(800px 600px at 20% 15%, rgba(255, 56, 176, 0.35) 0%, transparent 60%),
+    radial-gradient(900px 700px at 80% 85%, rgba(0, 194, 255, 0.35) 0%, transparent 60%),
+    /* base vibrant gradient */
+    linear-gradient(120deg, #2a0047 0%, #6a00ff 40%, #ff38b0 70%, #00c2ff 100%);
+  background-size: 100% 6px, 24px 24px, 100% 100%, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+  animation: bgGlitch 10s linear infinite;
   display: grid;
   place-items: center;
   margin: 0;
@@ -34,6 +45,20 @@ body {
   text-align: center;
 }
 
+.title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 #000;
+}
+
 h1 {
   margin: 0 0 8px 0;
   font-size: 2.4rem;
@@ -47,6 +72,15 @@ h1 {
 @keyframes flash {
   0% { color: #ff0033; }
   100% { color: #0033ff; }
+}
+
+/* Background glitch animation */
+@keyframes bgGlitch {
+  0%   { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+  25%  { background-position: 0 2px, 6px -6px, 2px 0, -2px 0, 0 0; }
+  50%  { background-position: 0 -2px, -8px 8px, -2px 0, 2px 0, 0 0; }
+  75%  { background-position: 0 1px, 12px -12px, 1px 0, -1px 0, 0 0; }
+  100% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
 }
 
 .tagline {
@@ -95,6 +129,12 @@ textarea {
 
 #wreckButton:hover {
   filter: hue-rotate(45deg) saturate(1.4);
+}
+
+#wreckButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: none;
 }
 
 #output {
