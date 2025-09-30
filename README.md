@@ -1,4 +1,4 @@
-# Text Wrecker
+# Text Wrecker: The Summer I Turned Petty
 
 Single-page app that "wrecks" user text with funny persona-based replacements. Built for hackathon meme-ability.
 
@@ -16,7 +16,7 @@ Single-page app that "wrecks" user text with funny persona-based replacements. B
 ## 🧭 How it works
 
 1. Type in the input.
-2. Pick a personality from the select.
+2. Pick a personality from the selection.
 3. Click "Wreck" and confirm the chaos prompt.
 4. Your transformed text appears; a random meme image swaps in.
 5. Click "Copy" to put the output on your clipboard.
@@ -107,12 +107,12 @@ Three transformation functions implement robust, case-insensitive phrase replace
 - Passive-Aggressive Nightmare
 - Shakespearean Drama King
 
-These live in the frontend app code and run purely client-side.
+These reside in the frontend app code and run purely on the client side.
 
 ## 🔒 Security and ♿ Accessibility
 
 - Never uses `innerHTML` to render user input
-- Focusable buttons and labeled controls
+- Focusable buttons and labelled controls
 - High-contrast, readable text with large hit targets
 
 ## 🧪 Development notes
