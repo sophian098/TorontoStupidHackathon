@@ -1,5 +1,10 @@
 {
   "version": 2,
+  "functions": {
+    "api/*.py": {
+      "runtime": "python3.11"
+    }
+  },
   "builds": [
     {
       "src": "api/index.py",
@@ -7,9 +12,8 @@
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "api/index.py"
-    }
+    { "src": "^/api/(.*)$", "dest": "api/index.py" },
+    { "src": "^/health$", "dest": "api/index.py" },
+    { "src": "^/$", "dest": "api/index.py" }
   ]
 }
