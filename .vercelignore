@@ -1,33 +1,4 @@
-# Node modules
-node_modules/
-frontend/node_modules/
-
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-backend/.venv/
-.pytest_cache/
-.mypy_cache/
-
-# Environment files (use Vercel env vars instead)
-.env
-.env.*
-backend/.env
-frontend/.env
-
-# Development artifacts
-frontend/.vite/
-*.log
-npm-debug.log*
-
-# Editor/OS
-.idea/
-.vscode/
-.DS_Store
-Thumbs.db
-
-# Git
-.git/
-.gitignore
+frontend/
+.github/
+*.md
+setup-github-pages.sh

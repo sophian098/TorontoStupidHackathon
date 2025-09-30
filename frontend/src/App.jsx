@@ -3,114 +3,8 @@ import SocialShare from './SocialShare'
 import OnlyPans from './OnlyPans'
 import jerryIcon from './assets/jerry.png'
 
-function applyReplacements(inputText, replacements) {
-  let result = inputText
-  for (const [pattern, replacement] of replacements) {
-    result = result.replace(pattern, replacement)
-  }
-  return result
-}
-
-function wreckCorporateRobot(text) {
-  const replacements = [
-    [/\blet'?s\s+talk\b/gi, "Let's circle back to touch base"],
-    [/\bwhat\s+do\s+you\s+think\??/gi, "What are your key takeaways?"],
-    [/\bproblem\b/gi, "opportunity"],
-    [/\bmeeting\b/gi, "sync"],
-    [/\bdeadline\b/gi, "deliverable timeline"],
-  ]
-  return applyReplacements(text, replacements)
-}
-
-function wreckPassiveAggressive(text) {
-  const replacements = [
-    [/\bi'?m\s+mad\b/gi, "Just wanted to check in on your emotional bandwidth :)"],
-    [/\bno\b/gi, "No worries if not!"],
-    [/\bokay\b/gi, "Sure, if that works for you, I guess"],
-    [/\bthanks\b/gi, "Thanks in advance, since reminders were ignored"],
-  ]
-  return applyReplacements(text, replacements)
-}
-
-function wreckShakespearean(text) {
-  const replacements = [
-    [/\byou\s*up\??\b/gi, "Hark! Dost thou stir?"],
-    [/\blol\b/gi, "Huzzah!"],
-    [/\byou\b/gi, "thou"],
-    [/\bare\b/gi, "art"],
-    [/\byour\b/gi, "thy"],
-  ]
-  return applyReplacements(text, replacements)
-}
-
-function wreckTeenAngstPoet(text) {
-  const replacements = [
-    [/\blife\b/gi, "existence"],
-    [/\bparents?\b/gi, "oppressors"],
-    [/\bheart\b/gi, "aching heart"],
-    [/\bhappy\b/gi, "fine, I guess"],
-    [/\blove\b/gi, "love (whatever)"],
-    [/\bworld\b/gi, "void"],
-  ]
-  return applyReplacements(text, replacements)
-}
-
-function wreckBelly(text) {
-  const replacements = [
-    [/\b(hello|hi)\b/gi, "yo"],
-    [/\bmoney\b/gi, "bag"],
-    [/\bwork\b/gi, "grind"],
-    [/\bparty\b/gi, "link up"],
-    [/\bvery\b/gi, "mad"],
-    [/\bgood\b/gi, "fire"],
-  ]
-  return applyReplacements(text, replacements)
-}
-
-function wreckJeremiah(text) {
-  const replacements = [
-    [/\byour\b/gi, "your glorious"],
-    [/\byou\b/gi, "legend"],
-    [/\bgreat\b/gi, "immaculate"],
-    [/\bnice\b/gi, "elite"],
-    [/\bteam\b/gi, "squad"],
-    [/\blet'?s\b/gi, "let's go"],
-  ]
-  return applyReplacements(text, replacements)
-}
-
-function wreckConrad(text) {
-  const replacements = [
-    [/\bfriends?\b/gi, "chums"],
-    [/\bidea\b/gi, "notion"],
-    [/\bvery\b/gi, "quite"],
-    [/\bgood\b/gi, "splendid"],
-    [/\bbad\b/gi, "most unfortunate"],
-    [/\bI\b/g, "one"],
-  ]
-  return applyReplacements(text, replacements)
-}
-
-function wreckText(persona, text) {
-  switch (persona) {
-    case 'Corporate Robot':
-      return wreckCorporateRobot(text)
-    case 'Passive-Aggressive Nightmare':
-      return wreckPassiveAggressive(text)
-    case 'Shakespearean Drama King':
-      return wreckShakespearean(text)
-    case 'Teen Angst Poet':
-      return wreckTeenAngstPoet(text)
-    case 'Belly':
-      return wreckBelly(text)
-    case 'Jeremiah':
-      return wreckJeremiah(text)
-    case 'Conrad':
-      return wreckConrad(text)
-    default:
-      return text
-  }
-}
+// All text transformations now use GEMINI AI via the backend API
+// No local text replacement functions
 
 const MEMES = [
   // Prefer stable, hotlink-friendly sources
@@ -122,6 +16,9 @@ const MEMES = [
 ]
 
 const FALLBACK_MEME = 'https://picsum.photos/seed/wrecker-fallback/640/420'
+
+// Use environment variable for API URL in production, otherwise use relative path for local dev
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 export default function App() {
   const [persona, setPersona] = useState('Corporate Robot')
@@ -152,42 +49,40 @@ export default function App() {
     // Clear previous output and show a generating indicator
     setAdvice('')
     setMeme('')
-    setOutput('Generating...')
+    setOutput('Generating with GEMINI AI...')
     setGenerating(true)
 
     try {
-      // Try backend AI first; fall back to local rules if unavailable
-      try {
-        const res = await fetch('/api/wreck', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ persona, text: input })
-        })
-        if (res.ok) {
-          const data = await res.json()
-          if (data?.output) {
-            setOutput(String(data.output))
-          } else {
-            setOutput(wreckText(persona, input))
-          }
-        } else {
-          setOutput(wreckText(persona, input))
-        }
-      } catch {
-        setOutput(wreckText(persona, input))
+      // ONLY use backend GEMINI API - no fallback to text replacements
+      const res = await fetch(`${API_BASE_URL}/api/wreck`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ persona, text: input })
+      })
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData?.error || `API error: ${res.status}`)
       }
+      
+      const data = await res.json()
+      if (!data?.output) {
+        throw new Error('No output received from GEMINI')
+      }
+      
+      setOutput(String(data.output))
 
       // Attempt meme API, fallback to local list
       let memeUrl = ''
       try {
-        const res = await fetch('/api/meme', {
+        const memeRes = await fetch(`${API_BASE_URL}/api/meme`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: input })
         })
-        if (res.ok) {
-          const data = await res.json()
-          if (data?.url) memeUrl = String(data.url)
+        if (memeRes.ok) {
+          const memeData = await memeRes.json()
+          if (memeData?.url) memeUrl = String(memeData.url)
         }
       } catch {}
 
@@ -195,6 +90,10 @@ export default function App() {
         memeUrl = MEMES[Math.floor(Math.random() * MEMES.length)] || FALLBACK_MEME
       }
       setMeme(memeUrl)
+    } catch (error) {
+      setOutput(`❌ Error: Unable to connect to GEMINI AI. ${error.message}\n\nMake sure the backend is running and GEMINI_API_KEY is configured.`)
+      setGenerating(false)
+      return
     } finally {
       setGenerating(false)
     }
@@ -328,7 +227,7 @@ export default function App() {
 
     // Fetch chaotic advice to display after copy
     try {
-      const res = await fetch('/api/advice', {
+      const res = await fetch(`${API_BASE_URL}/api/advice`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: outputText })

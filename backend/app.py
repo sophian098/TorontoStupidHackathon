@@ -81,6 +81,54 @@ def create_app() -> Flask:
             or ""
         )
 
+    def get_model_candidates() -> t.List[str]:
+        """Return preferred Gemini model IDs in priority order.
+
+        Based on docs: prefer stable 2.5 Flash, then the latest Flash alias,
+        then 2.0 Flash stable variants, and finally experimental as a last resort.
+        Allows override via env var GEMINI_MODEL (comma-separated list).
+        See https://ai.google.dev/gemini-api/docs/models
+        """
+        override = os.getenv("GEMINI_MODEL")
+        if override:
+            return [m.strip() for m in override.split(",") if m.strip()]
+
+        return [
+            # Stable tier
+            "gemini-2.5-flash",
+            # Latest alias (may point to preview/stable depending on release cadence)
+            "gemini-flash-latest",
+            # Previous generation stable options
+            "gemini-2.0-flash",
+            "gemini-2.0-flash-001",
+            # Experimental fallback when others are temporarily unavailable
+            "gemini-2.0-flash-exp",
+        ]
+
+    def generate_with_fallback(client: "genai.Client", contents: str) -> str:
+        """Attempt text generation across multiple models until one succeeds.
+
+        Returns the response.text from the first successful call or raises the
+        last encountered exception if all candidates fail.
+        """
+        last_error: t.Optional[Exception] = None
+        for model in get_model_candidates():
+            try:
+                response = client.models.generate_content(model=model, contents=contents)
+                output_text = (getattr(response, "text", "") or "").strip()
+                if output_text:
+                    return output_text
+                # If empty, try next model
+                last_error = RuntimeError("Empty response from model: %s" % model)
+            except Exception as exc:  # pragma: no cover - network/service dependent
+                # Capture and try the next candidate
+                last_error = exc
+                continue
+        # Exhausted candidates
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError("No models attempted")
+
     @app.post("/api/wreck")
     def wreck_api() -> tuple:
         """Rewrite text using Gemini based on a selected persona.
@@ -121,21 +169,14 @@ def create_app() -> Flask:
                 f"Text to rewrite:\n{text}"
             )
 
-            # New client API call
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=(
-                    f"{system_instructions}\n\n"
-                    f"Persona: {persona or 'Unspecified'}\n"
-                    f"Style hints: {persona_hint}\n\n"
-                    f"Text to rewrite:\n{text}"
-                ),
+            # Generate with model fallback
+            combined_contents = (
+                f"{system_instructions}\n\n"
+                f"Persona: {persona or 'Unspecified'}\n"
+                f"Style hints: {persona_hint}\n\n"
+                f"Text to rewrite:\n{text}"
             )
-
-            output_text = (getattr(response, "text", "") or "").strip()
-            if not output_text:
-                return jsonify(error="Empty response from model"), 502
-
+            output_text = generate_with_fallback(client, combined_contents)
             return jsonify(output=output_text), 200
         except Exception as exc:  # pragma: no cover - network/service dependent
             return jsonify(error=str(exc)), 502
@@ -184,11 +225,7 @@ def create_app() -> Flask:
                 "Now produce the one-line chaotic encouragement."
             )
 
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-            )
-            advice_text = (getattr(response, "text", "") or "").strip()
+            advice_text = generate_with_fallback(client, prompt)
             if not advice_text:
                 advice_text = fallback_advices[1]
 
@@ -237,11 +274,7 @@ def create_app() -> Flask:
                     f"Text: {text or '[no text provided]'}\n"
                     "Keep it breakup/messy-text themed."
                 )
-                response = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=prompt,
-                )
-                raw = (getattr(response, "text", "") or "").strip()
+                raw = generate_with_fallback(client, prompt)
                 # Parse the expected TOP/BOTTOM lines
                 if raw:
                     lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
@@ -274,6 +307,25 @@ def create_app() -> Flask:
         )
 
         return jsonify(url=meme_url), 200
+
+    @app.after_request
+    def add_cors_headers(response):
+        """Allow the GitHub Pages origin (or any, if not configured) to call the API.
+
+        Configure ALLOWED_ORIGIN in the environment for stricter control, e.g.
+        https://<github-username>.github.io or your custom domain.
+        """
+        allowed_origin = os.getenv("ALLOWED_ORIGIN", "*")
+        response.headers["Access-Control-Allow-Origin"] = allowed_origin
+        response.headers["Vary"] = "Origin"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        return response
+
+    @app.route("/api/<path:_preflight_only>", methods=["OPTIONS"])
+    def cors_preflight(_preflight_only) -> tuple:
+        """Generic preflight responder for all API endpoints."""
+        return ("", 204)
 
     return app
 
